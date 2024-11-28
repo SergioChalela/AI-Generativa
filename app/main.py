@@ -26,17 +26,21 @@ async def get_home():
 class ChatRequest(BaseModel):
     prompt: str
 
-conversation_history = []
+# Inicializar el historial de conversación con un mensaje de sistema para definir el contexto
+conversation_history = [
+    {"role": "system", "content": "Eres un asistente de servicio al cliente para la empresa 'SergioTech'. Tu tarea es ayudar a los clientes con preguntas sobre productos, devoluciones y soporte."}
+]
 
 @app.post("/chat/")
 async def chat(request: ChatRequest):
     global conversation_history
+    # Agregar el mensaje del usuario al historial
     conversation_history.append({"role": "user", "content": request.prompt})
     
     try:
-        # Solicitud a la API de OpenAI
+        # Solicitar a la API de OpenAI con el historial de conversación
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",  # Cambia a "gpt-4" si tienes acceso
+            model="gpt-3.5-turbo",  # Usa "gpt-4" si tienes acceso
             messages=conversation_history,
             max_tokens=150,
             temperature=0.7
@@ -45,13 +49,14 @@ async def chat(request: ChatRequest):
         # Extraer la respuesta del modelo
         model_response = response.choices[0].message["content"]
         
-        # Añadir respuesta a la historia de la conversación
+        # Agregar la respuesta del modelo al historial de conversación
         conversation_history.append({"role": "assistant", "content": model_response})
         
-        # Retornar la respuesta
+        # Retornar la respuesta generada por el modelo
         return {"response": model_response}
     
     except Exception as e:
-        # En caso de error, mostrar más detalles
+        # En caso de error, mostrar un mensaje de error
         return {"response": f"Error en la respuesta: {str(e)}"}
+
 
