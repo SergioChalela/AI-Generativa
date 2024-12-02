@@ -31,5 +31,5 @@ El sistema permite:
 ### Paso 1: Clonar el repositorio
 
 ```bash
-git clone <URL-del-repositorio>
-cd <nombre-del-repositorio>
+git clone https://github.com/SergioChalela/AI-Generativa
+cd AI-Generativa
